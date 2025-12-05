@@ -22,7 +22,7 @@ st.markdown("""
     /* 1. スマホでタイトルが改行しないように文字サイズを調整 */
     @media (max-width: 640px) {
         h1 {
-            font-size: 1.8rem !important; /* 文字を少し小さく */
+            font-size: 1.8rem !important;
         }
     }
     
@@ -69,6 +69,27 @@ def call_gemini(prompt):
         except Exception:
             # 両方ダメだった場合のみ、安全なエラーメッセージを返す（キーは表示しません）
             return "⚠️ 現在アクセスが集中しており応答できません。申し訳ありませんが、1分ほど待ってからもう一度お試しください。"
+
+# 2. 楽天市場APIを呼び出す関数
+def search_rakuten_items(keyword):
+    url = "https://app.rakuten.co.jp/services/api/IchibaItem/Search/20220601"
+    params = {
+        "format": "json",
+        "keyword": keyword,
+        "applicationId": RAKUTEN_APP_ID,
+        "affiliateId": RAKUTEN_AFF_ID,
+        "hits": 3,
+        "sort": "standard"
+    }
+    
+    try:
+        res = requests.get(url, params=params)
+        data = res.json()
+        if "Items" in data:
+            return [item['Item'] for item in data['Items']]
+        return []
+    except:
+        return []
 
 # ==========================================
 #  メイン処理
@@ -136,7 +157,6 @@ if user_input := st.chat_input("何をお探しですか？"):
                     final_reply_text = f"「{keyword}」のおすすめ商品を3つ厳選しました！"
                     st.markdown(final_reply_text) # 先にメッセージを表示
 
-                    # ★ここが変更点：ループしながら1つずつAIコメントを生成
                     for item in items:
                         with st.container():
                             cols = st.columns([1, 2])
@@ -186,10 +206,4 @@ if user_input := st.chat_input("何をお探しですか？"):
     if found_items_data:
         message_data["items"] = found_items_data
     
-
     st.session_state.messages.append(message_data)
-
-
-
-
-
