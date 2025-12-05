@@ -115,7 +115,7 @@ if user_input := st.chat_input("何をお探しですか？"):
         st.markdown(user_input)
 
     with st.chat_message("assistant"):
-        with st.spinner("AIが商品をリサーチ中..."):
+        with st.spinner("商品検索中…少々お待ちください"):
             
             # --- ロジック ---
             previous_topic = st.session_state.previous_topic
@@ -196,6 +196,7 @@ if user_input := st.chat_input("何をお探しですか？"):
     
 
     st.session_state.messages.append(message_data)
+
 
 
 
