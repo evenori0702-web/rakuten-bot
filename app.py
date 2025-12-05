@@ -6,10 +6,10 @@ import datetime
 # ==========================================
 #  設定エリア
 # ==========================================
-# ★ここにAPIキーを入れてください
-GEMINI_API_KEY = "AIzaSyClpirZwjfmdBkIfx97c5V5FGTI1lEbhzo" 
-RAKUTEN_APP_ID = "1086769761513715254"
-RAKUTEN_AFF_ID = "4e04ae78.48b0815e.4e04ae79.3f5507da"
+# secrets（金庫）からキーを読み込む設定
+GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+RAKUTEN_APP_ID = st.secrets["RAKUTEN_APP_ID"]
+RAKUTEN_AFF_ID = st.secrets["RAKUTEN_AFF_ID"]
 
 # ==========================================
 #  ページ設定 & デザイン変更 (背景色など)
@@ -186,4 +186,5 @@ if user_input := st.chat_input("何をお探しですか？"):
     if found_items_data:
         message_data["items"] = found_items_data
     
+
     st.session_state.messages.append(message_data)
