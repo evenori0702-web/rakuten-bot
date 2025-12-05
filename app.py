@@ -19,24 +19,39 @@ st.set_page_config(page_title="楽天市場検索Bot", page_icon="🛍️")
 # CSSを使ってデザインを調整
 st.markdown("""
     <style>
-    /* 1. アプリ全体の背景色と文字色を固定 */
+    /* 1. アプリ全体の背景色 */
     .stApp {
-        background-color: #FFF0F5; /* 背景：薄いピンク */
-        color: black !important;     /* ★文字：強制的に黒 */
+        background-color: #FFF0F5;
     }
     
-    /* 2. チャットの入力欄などを白くして見やすく */
-    .stChatInput {
-        background-color: white;
+    /* 2. あらゆる文字を「黒」に強制する（pタグ, spanタグ, divタグ, 見出しなど） */
+    .stApp p, .stApp span, .stApp div, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6 {
+        color: black !important;
+    }
+    
+    /* 3. ただし、リンクだけはわかりやすく「青」にする */
+    .stApp a {
+        color: #1E90FF !important;
     }
 
-    /* 3. 右下のアイコンやフッター、右上のメニューを隠す */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
+    /* 4. チャット入力欄の調整 */
+    .stChatInput {
+        background-color: white !important;
+    }
+    .stChatInput textarea {
+        color: black !important; /* 入力中の文字も黒く */
+        caret-color: black !important; /* カーソルも黒く */
+    }
+
+    /* 5. ヘッダー・フッター・メニューアイコンを消す */
+    header {visibility: hidden !important;}
+    footer {visibility: hidden !important;}
+    #MainMenu {visibility: hidden !important;}
     
-    /* 特定の管理ボタンなどを隠す（念のため） */
-    .stDeployButton {display:none;}
+    /* 右上のメニューボタンなどをターゲットにして消す */
+    [data-testid="stToolbar"] {
+        display: none !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -198,4 +213,5 @@ if user_input := st.chat_input("何をお探しですか？"):
     
 
     st.session_state.messages.append(message_data)
+
 
