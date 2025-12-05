@@ -16,17 +16,27 @@ RAKUTEN_AFF_ID = st.secrets["RAKUTEN_AFF_ID"]
 # ==========================================
 st.set_page_config(page_title="楽天市場検索Bot", page_icon="🛍️")
 
-# CSSを使って背景色を変更する
+# CSSを使ってデザインを調整
 st.markdown("""
     <style>
-    /* アプリ全体の背景色を変更 */
+    /* 1. アプリ全体の背景色と文字色を固定 */
     .stApp {
-        background-color: #FFF0F5; /* 薄いピンク色 (カラーコードはお好みで変更可) */
+        background-color: #FFF0F5; /* 背景：薄いピンク */
+        color: black !important;     /* ★文字：強制的に黒 */
     }
-    /* チャットの入力欄などを白くして見やすく */
+    
+    /* 2. チャットの入力欄などを白くして見やすく */
     .stChatInput {
         background-color: white;
     }
+
+    /* 3. 右下のアイコンやフッター、右上のメニューを隠す */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* 特定の管理ボタンなどを隠す（念のため） */
+    .stDeployButton {display:none;}
     </style>
     """, unsafe_allow_html=True)
 
@@ -188,3 +198,4 @@ if user_input := st.chat_input("何をお探しですか？"):
     
 
     st.session_state.messages.append(message_data)
+
