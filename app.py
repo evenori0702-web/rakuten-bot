@@ -44,39 +44,31 @@ st.title("🛍️ 楽天市場検索Bot")
 #  関数定義エリア
 # ==========================================
 
-# 1. Gemini APIを呼び出す関数
+# 1. Gemini APIを呼び出す関数（自動切り替え・安全機能付き）
 def call_gemini(prompt):
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+    # ★メイン: 最新の 2.5 Flash (性能最高)
+    url_main = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+    # ★サブ: 安定の 2.0 Flash (メインがダメならこちらを使う)
+    url_sub  = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+    
     headers = {'Content-Type': 'application/json'}
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
     
+    # 1回目：メイン（2.5）で挑戦
     try:
-        response = requests.post(url, headers=headers, json=payload)
-        response.raise_for_status()
+        response = requests.post(url_main, headers=headers, json=payload)
+        response.raise_for_status() # エラーがあればここで失敗とみなす
         return response.json()['candidates'][0]['content']['parts'][0]['text']
-    except Exception as e:
-        return f"エラー: {e}"
-
-# 2. 楽天市場APIを呼び出す関数
-def search_rakuten_items(keyword):
-    url = "https://app.rakuten.co.jp/services/api/IchibaItem/Search/20220601"
-    params = {
-        "format": "json",
-        "keyword": keyword,
-        "applicationId": RAKUTEN_APP_ID,
-        "affiliateId": RAKUTEN_AFF_ID,
-        "hits": 3,           # ★コメント生成に時間がかかるため、3件に絞りました
-        "sort": "standard"
-    }
-    
-    try:
-        res = requests.get(url, params=params)
-        data = res.json()
-        if "Items" in data:
-            return [item['Item'] for item in data['Items']]
-        return []
-    except:
-        return []
+    except Exception:
+        # メインが失敗したら、ここに来る
+        # 2回目：サブ（2.0）で自動リトライ
+        try:
+            response = requests.post(url_sub, headers=headers, json=payload)
+            response.raise_for_status()
+            return response.json()['candidates'][0]['content']['parts'][0]['text']
+        except Exception:
+            # 両方ダメだった場合のみ、安全なエラーメッセージを返す（キーは表示しません）
+            return "⚠️ 現在アクセスが集中しており応答できません。申し訳ありませんが、1分ほど待ってからもう一度お試しください。"
 
 # ==========================================
 #  メイン処理
@@ -196,6 +188,7 @@ if user_input := st.chat_input("何をお探しですか？"):
     
 
     st.session_state.messages.append(message_data)
+
 
 
 
